@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Swal from 'sweetalert2';
@@ -8,9 +9,9 @@ import Cookies from 'js-cookie';
 
 import "../assets/css/index.css";
 
+
 function Navigation() {
   const [isAuth, setIsAuth] = useState(false);
-  const [showModal, setShowModal] = useState({});
   useEffect( () =>{
     const access_token = Cookies.get('access_token')
     setIsAuth(!!access_token)
@@ -64,21 +65,20 @@ const LogoutInfo = (data) => {
 
 const handleClickUserLogOut = async (e) => {
     Swal.showLoading()
-    await axios.get(process.env.VITE_SSO_URL+"user",{
+    const refresh = JSON.stringify({'access_token': Cookies.get('access_token')})
+    await axios.post(process.env.VITE_SSO_URL+"auth/logout",refresh,{
         headers:{
-        'Content-Type':'application/json',
-        'Authorization': 'Bearer '+ Cookies.get('access_token')
+          'Content-Type':'application/json',
+          'Authorization': 'Bearer '+ Cookies.get('access_token')
         }
     }).then((response) => {
-        console.log(response)
-        LogoutInfo(response)
+          Cookies.remove('access_token', response.AccessToken);
+          Cookies.remove('refresh_token', response.RefreshToken);
+          window.location.href = "/";
     }).catch( (error) =>{
         console.log(error)  
     })
 
-    // Cookies.set('access_token', data.AccessToken);
-    // Cookies.set('refresh_token', data.RefreshToken);
-    // navigate("/");
 }
 
 export default Navigation

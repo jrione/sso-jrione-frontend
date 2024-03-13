@@ -1,26 +1,31 @@
-import React, {useState} from 'react';
+import React,{ useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import withReactContent from 'sweetalert2-react-content'
+import Swal from 'sweetalert2';
 import 'react-bootstrap';
-import Modal from 'react-bootstrap/Modal';
-import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../assets/css/index.css";
 
-import {useNavigate} from "react-router-dom";
-
 const Login = () => {
-    if (Cookies.get("access_token") == 'undefined' && Cookies.get('refresh_token') == 'undefined') {
-        window.location.href = process.env.VITE_BASE_URL
-    }
+    const [isAuth, setIsAuth] = useState(false);
+    useEffect( () =>{
+        const access_token = Cookies.get('access_token')
+        setIsAuth(!!access_token)
+    }, [isAuth]);
+  
+    isAuth 
+        ? window.location.href = process.env.VITE_BASE_URL
+        : false
+
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     
     const submitLogin = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         const user = {
-        username : username,
-        password: password
+            username : username,
+            password: password
         }
         await axios.post(process.env.VITE_SSO_URL+"auth/login", user)
         .then((response) => {
@@ -28,7 +33,7 @@ const Login = () => {
             Cookies.set('refresh_token', response.data.RefreshToken);
             window.location.href = process.env.VITE_BASE_URL
         }).catch( (error) =>{
-            console.log(error)  
+            LoginInfo(error)
         })
     }
 
@@ -69,5 +74,17 @@ const Login = () => {
        </div>
     )
 };
+
+const LoginInfo = (data) => {
+    const LoginInfoSwal = withReactContent(Swal)
+    LoginInfoSwal.fire({
+        title: <p>{data.response.status}</p>,
+        text: (data.response.data.code == 401)
+                ? "Username atau Password Salah"
+                : "Error Occured, "+ data.message,
+        icon: "warning",
+    })
+    console.log(data)
+}
 
 export default Login;
