@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import withReactContent from 'sweetalert2-react-content'
+import withReactContent from 'sweetalert2-react-content';
 import Cookies from 'js-cookie';
+import {Link} from 'react-router-dom';
 
 import "../assets/css/index.css";
 
@@ -20,7 +20,9 @@ function Navigation() {
     <Navbar bg="dark" variant="dark">
       <Nav className="container">
         <Nav.Item>
-          <Navbar.Brand className="ml-10" href="/">JriOne</Navbar.Brand>
+          <Navbar.Brand className="ml-10" as={Link} to="/">
+              JriOne
+          </Navbar.Brand>
         </Nav.Item>
         {
           isAuth ? (
@@ -31,7 +33,7 @@ function Navigation() {
             </Nav.Item>
           ): (
             <Nav.Item className="ml-auto">
-              <Nav.Link href="/client/login">Login</Nav.Link>
+              <Nav.Link as={Link} to="/client/login">Login</Nav.Link>
             </Nav.Item>
           )
         }

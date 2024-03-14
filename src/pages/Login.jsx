@@ -1,4 +1,5 @@
-import React,{ useEffect, useState } from 'react'
+import React from 'react';
+import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import withReactContent from 'sweetalert2-react-content'
@@ -77,14 +78,18 @@ const Login = () => {
 
 const LoginInfo = (data) => {
     const LoginInfoSwal = withReactContent(Swal)
+    console.log(data)
     LoginInfoSwal.fire({
-        title: <p>{data.response.status}</p>,
-        text: (data.response.data.code == 401)
+        title: <p>{
+                (data.code != 'ERR_NETWORK')
+                    ? data.response.status
+                    : "ERROR" 
+                }</p>,
+        text: (data.code != 'ERR_NETWORK')
                 ? "Username atau Password Salah"
                 : "Error Occured, "+ data.message,
         icon: "warning",
     })
-    console.log(data)
 }
 
 export default Login;
